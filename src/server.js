@@ -1,42 +1,35 @@
 import { randomUUID } from "node:crypto";
 import http from "node:http";
 import moment from "moment"
+import { json } from "./middlewares/json.js";
+import { Database } from "./database.js";
 
-
-const tasks = []
+const database = new Database()
 
 const server = http.createServer(async (req,res)=>{
    const {method, url} = req
 
-   const buffers = []
-
-   for await (const chunk of req){
-        buffers.push(chunk)
-   }
-   const body = JSON.parse(Buffer.concat(buffers).toString())
-
-   try {
-    req.body = JSON.parse(Buffer.concat(buffers).toString())
-   } catch (error) {
-    req.body = null
-   }
+   await json(req,res)
    
-
-
    if(method==="GET" && url ==="/tasks"){
-    return res.setHeader('Content-type','application/json').end(JSON.stringify(tasks))
+    const tasks = database.select("tasks")
+    return res.end(JSON.stringify(tasks))
    }
 
    if(method==="POST" && url==="/tasks"){
         
-        tasks.push({
+        const {title, description} = req.body
+
+        const newTask = {
             id: randomUUID(),
-            title: 'task 1',
-            description: 'descrição da task',
+            title,
+            description,
             completed_at: null,
             created_at:  moment().format("YYYY-MM-DD HH:mm:ss"),
             updated_at: null
-        })
+        }
+
+        database.insert("tasks", newTask)
         return res.writeHead(201).end()
     }
 
