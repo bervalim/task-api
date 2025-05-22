@@ -18,7 +18,7 @@ const server = http.createServer(async (req,res)=>{
 
    if(method==="POST" && url==="/tasks"){
         
-        const {title, description} = req.body
+        const { title, description } = req.body
 
         const newTask = {
             id: randomUUID(),
