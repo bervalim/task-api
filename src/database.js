@@ -1,12 +1,6 @@
 import fs from 'node:fs/promises'
 
-console.log(import.meta.url)
 const databasePath = new URL('../db.json', import.meta.url)
-console.log('databasePath' ,databasePath);
-
-
-
-
 export class Database {
     constructor(){
         fs.readFile(databasePath,'utf-8').then(data => {
@@ -14,6 +8,7 @@ export class Database {
         })
         .catch(()=> {
             this.#persist()
+            
         })
     }
     #database = {}
@@ -23,7 +18,6 @@ export class Database {
     }
 
     select(table){
-        console.log(this.#database[table])
         const data = this.#database[table] ?? []
         return data
     }
