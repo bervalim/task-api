@@ -34,4 +34,37 @@ export class Database {
 
         return data
     }
+
+    delete(table, id){
+        const index = this.#database[table].findIndex(index => index.id === id)
+
+        if(index === -1) {
+            return false;
+        }
+        
+        this.#database[table].splice(index,1);
+        this.#persist()
+        return true;
+    }
+
+    one(table,id){
+        const task = this.#database[table].find(task => task.id === id);
+        return task;
+    }
+
+    update(table,id,data){
+    
+          const index = this.#database[table].findIndex((row) => row.id === id);
+
+          if (index > -1) {
+            const currentData = this.#database[table][index];
+            const updateData = { ...currentData, ...data };
+            this.#database[table][index] = updateData;
+            this.#persist();
+            return updateData
+          }
+
+          return null;
+        
+    }
 }

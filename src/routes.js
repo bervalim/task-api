@@ -37,7 +37,51 @@ export const routes = [
     method: "DELETE",
     path:  buildRoutePath("/tasks/:id"),
     handler: (req, res) => {
-     
+      const { id } = req.params
+      const isDeleted =  database.delete("tasks",id)
+
+      if(!isDeleted){
+        return res.writeHead(404).end(JSON.stringify({ message: "Task not found" }));
+      }
+
+      return res.writeHead(204).end();
+    },
+  },
+  {
+    method: "GET",
+    path:  buildRoutePath("/tasks/:id"),
+    handler: (req, res) => {
+      const { id } = req.params
+
+      const task = database.one("tasks",id)
+
+      if(!task){
+        return res.writeHead(404).end(JSON.stringify({ message: "Task not found" }));
+      }
+      return res.writeHead(200).end(JSON.stringify(task));
+    },
+  },
+  {
+    method: "PUT",
+    path:  buildRoutePath("/tasks/:id"),
+    handler: (req, res) => {
+      const { id } = req.params
+
+      const { title, description } = req.body;
+
+      const updatedTask = {
+        title,
+        description,
+        updated_at: moment().format("YYYY-MM-DD HH:mm:ss")
+      };
+
+      const task = database.update("tasks", id, updatedTask)
+
+      if(!task){
+        return res.writeHead(404).end(JSON.stringify({ message: "Task not found" }));
+      }
+
+      return res.writeHead(200).end(JSON.stringify(task));
     },
   },
 ];
