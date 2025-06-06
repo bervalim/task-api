@@ -19,9 +19,7 @@ export class Database {
 
     select(table, search){
         let data = this.#database[table] ?? []
-
-        // {'name':Bernardo,'email':bernardogvalim"rmail.com}
-        // [['name','Bernardo'],['email','bernardo...']]
+        
         if (search) {
           data = data.filter(task => {
             return Object.entries(search).some(([key, value]) => {

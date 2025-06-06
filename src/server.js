@@ -6,18 +6,14 @@ import {extractQueryParams} from "./utils/extractQueryParams.js"
 const server = http.createServer(async (req,res)=>{
    const { method, url } = req
 
-   await json(req,res)
+   await json(req,res) 
 
    const route = routes.find(route => route.method === method && route.path.test(url));
   
    if(route){
       const routeParams = req.url.match(route.path)
 
-      console.log('routeParams',routeParams);
-
-      console.log('routeParams.groups',routeParams.groups);
-
-      const {query,...params} = routeParams.groups
+      const { query,...params } = routeParams.groups
 
       req.params = params
 

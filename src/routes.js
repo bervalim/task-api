@@ -2,6 +2,8 @@ import { Database } from "./database.js";
 import { randomUUID } from "node:crypto";
 import moment from "moment";
 import { buildRoutePath } from "./utils/buildRoutePath.js";
+import { z } from "zod"
+import { createTaskSchema, updateTaskSchema } from "./schemas/task.schema.js";
 
 const database = new Database()
 
@@ -20,7 +22,13 @@ export const routes = [
     method: "POST",
     path:  buildRoutePath("/tasks"),
     handler: (req, res) => {
-      const { title, description } = req.body;
+      const parseResult = createTaskSchema.safeParse(req.body)
+
+      if (!parseResult.success) {
+        return res.writeHead(400).end(JSON.stringify(parseResult.error));
+      }
+
+      const { title, description } = parseResult.data;
 
       const newTask = {
         id: randomUUID(),
@@ -69,7 +77,13 @@ export const routes = [
     handler: (req, res) => {
       const { id } = req.params
 
-      const { title, description } = req.body;
+      const parseResult = updateTaskSchema.safeParse(req.body)
+
+      if (!parseResult.success) {
+        return res.writeHead(400).end(JSON.stringify(parseResult.error));
+      }
+
+      const { title, description } = parseResult.data;
 
       const updatedTask = {
         title,
