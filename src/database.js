@@ -17,21 +17,20 @@ export class Database {
         fs.writeFile(databasePath,JSON.stringify(this.#database))
     }
 
-    select(table,search){
+    select(table, search){
         let data = this.#database[table] ?? []
 
         // {'name':Bernardo,'email':bernardogvalim"rmail.com}
         // [['name','Bernardo'],['email','bernardo...']]
         if (search) {
-          data = data.filter((task) => {
+          data = data.filter(task => {
             return Object.entries(search).some(([key, value]) => {
-                return task[key.toLowerCase()].includes(value.toLowerCase())
+                return task[key].toLowerCase().includes(value.toLowerCase())
             });
           });
         }
         return data
     }
-
 
     insert(table,data){
         if(Array.isArray(this.#database[table])){
