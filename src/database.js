@@ -71,7 +71,29 @@ export class Database {
             return updateData
           }
 
-          return null;
-        
+          return null; 
+    }
+
+    patch(table, id){
+        const index = this.#database[table].findIndex((row) => row.id === id);
+
+        if(index === -1){
+            return null;
+        }
+
+        const currentTask = this.#database[table][index]
+        const isCompleted = currentTask.completed_at !== null;
+
+        const updatedTask = {
+            ...currentTask,
+            completed_at: isCompleted ? null : moment().format("YYYY-MM-DD HH:mm:ss"),
+            updated_at: moment().format("YYYY-MM-DD HH:mm:ss"),
+        }
+
+        this.#database[table][index] = updatedTask;
+        this.#persist();
+
+        return updatedTask;
+
     }
 }

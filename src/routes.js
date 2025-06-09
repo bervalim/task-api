@@ -14,7 +14,10 @@ export const routes = [
     handler: (req, res) => {
       console.log('req.query',req.query);
       const { search } = req.query
-      const tasks = database.select("tasks", search ? { title: search } : null);
+      const tasks = database.select(
+        "tasks",
+        search ? { title: search, description: search } : null
+      );
       return res.end(JSON.stringify(tasks));
     },
   },
@@ -25,7 +28,12 @@ export const routes = [
       const parseResult = createTaskSchema.safeParse(req.body)
 
       if (!parseResult.success) {
-        return res.writeHead(400).end(JSON.stringify(parseResult.error));
+        return res.writeHead(400).end(
+          JSON.stringify({
+            message: "Erro de validação nos campos enviados.",
+            errors: parseResult.error.flatten().fieldErrors,
+          })
+        );
       }
 
       const { title, description } = parseResult.data;
@@ -80,7 +88,12 @@ export const routes = [
       const parseResult = updateTaskSchema.safeParse(req.body)
 
       if (!parseResult.success) {
-        return res.writeHead(400).end(JSON.stringify(parseResult.error));
+        return res.writeHead(400).end(
+          JSON.stringify({
+            message: "Erro de validação nos campos enviados.",
+            errors: parseResult.error.flatten().fieldErrors,
+          })
+        );
       }
 
       const { title, description } = parseResult.data;
@@ -92,6 +105,22 @@ export const routes = [
       };
 
       const task = database.update("tasks", id, updatedTask)
+
+      if(!task){
+        return res.writeHead(404).end(JSON.stringify({ message: "Task not found" }));
+      }
+
+      return res.writeHead(200).end(JSON.stringify(task));
+    },
+  },
+  {
+    method: "PATCH",
+    path:  buildRoutePath("/tasks/:id/complete"),
+    handler: (req, res) => {
+      const { id } = req.params
+
+
+      const task = database.patch("tasks", id)
 
       if(!task){
         return res.writeHead(404).end(JSON.stringify({ message: "Task not found" }));
