@@ -2,7 +2,6 @@ import { Database } from "./database.js";
 import { randomUUID } from "node:crypto";
 import moment from "moment";
 import { buildRoutePath } from "./utils/buildRoutePath.js";
-import { z } from "zod"
 import { createTaskSchema, updateTaskSchema } from "./schemas/task.schema.js";
 
 const database = new Database()
@@ -118,7 +117,6 @@ export const routes = [
     path:  buildRoutePath("/tasks/:id/complete"),
     handler: (req, res) => {
       const { id } = req.params
-
 
       const task = database.patch("tasks", id)
 
